@@ -197,7 +197,7 @@ const CarMap = ({ stopBus, setStopBus }) => {
         className="absolute bottom-4 right-3.5 z-30"
         icon={!isUserLocationActive ? "near_me" : "person_pin"}
       ></Fab>
-      {/* Alerta */}
+      {/* Alerta 
       <div className="absolute z-20 bottom-5 w-full">
         <Toast
           text="El bus se encuentra cerca"
@@ -205,7 +205,7 @@ const CarMap = ({ stopBus, setStopBus }) => {
           className={"mx-auto"}
           isHidden={true}
         ></Toast>
-      </div>
+      </div>*/}
       {/* Mapa */}
       <MapContainer
         center={center}

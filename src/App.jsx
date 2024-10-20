@@ -37,7 +37,7 @@ function App() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col h-screen max-h-screen">
+      <div className="flex flex-col h-dvh">
         <div className="flex-1 w-screen bg-base-100 relative flex flex-col lg:flex-row items-center justify-center lg:gap-5 lg:p-16">
           
           {/* Mapa */}
