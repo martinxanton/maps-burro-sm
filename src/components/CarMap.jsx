@@ -79,19 +79,19 @@ const CarMap = ({ stopBus, setStopBus }) => {
     const fetchCarData = async () => {
       try {
         const response = await axios.get(
-          "https://api.contigosanmarcos.com/status?count=1"
+          "https://maps-burro-sm-backend.onrender.com/api/car-data"
         );
         const data = response.data;
         setCarData(data);
-        setCarPosition([data.positions[0].lt, data.positions[0].lg]);
-        if (data.positions[0].velocity === 0) {
+        setCarPosition([data.latitude, data.longitude]);
+        if (data.speed === 0) {
           setStopBus(true);
         } else {
           setStopBus(false);
         }
         if (followCar) {
           console.log("Centrar en el bus activado");
-          setCenter([data.positions[0].lt, data.positions[0].lg]);
+          setCenter([data.latitude, data.longitude]);
         }
       } catch (error) {
         console.error("Error al obtener datos de la API", error);
@@ -224,9 +224,8 @@ const CarMap = ({ stopBus, setStopBus }) => {
         {carData && (
           <Marker position={carPosition} icon={carIcon}>
             <Popup>
-              <b>Velocidad:</b> {carData.positions[0].velocity.toFixed(2)} km/h
+              <b>Velocidad:</b> {carData.speed.toFixed(2)} km/h
               <br />
-              <b>Batería:</b> {carData.positions[0].bat}%
             </Popup>
           </Marker>
         )}
