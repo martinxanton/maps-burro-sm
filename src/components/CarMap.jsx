@@ -228,6 +228,7 @@ const CarMap = ({ stopBus, setStopBus, notification, isUserLocationActive, setIs
       <MapContainer
         center={center}
         bounds={bounds}
+        maxBounds={bounds}
         bounceAtZoomLimits={true}
         minZoom={16}
         maxZoom={18}
