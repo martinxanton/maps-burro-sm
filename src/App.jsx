@@ -9,12 +9,13 @@ function App() {
   const [isUserLocationActive, setIsUserLocationActive] = useState(false); // Estado de la geolocalización del usuario
 
   const checkedNotification = () => {
-    if (isUserLocationActive) {
+    if (isUserLocationActive && !notification) {
       setNotification(true);
+      console.log("Notificación activada");
     } else {
       setNotification(false);
+      console.log("Notificación desactivada");
     }
-    
   };
 
   return (

@@ -85,10 +85,11 @@ const CarMap = ({ stopBus, setStopBus, notification, isUserLocationActive, setIs
           setCenter([data.latitude, data.longitude]);
         }
         if (isUserLocationActive && userPosition && carPosition && notification) {
+          console.log("Verificar si el usuario está dentro del radio del bus");
           checkIfWithinRadius(
             [data.latitude, data.longitude],
             userPosition,
-            1000
+            500
           );
         }
       } catch (error) {
@@ -115,6 +116,9 @@ const CarMap = ({ stopBus, setStopBus, notification, isUserLocationActive, setIs
           radius / 1000
         } km (${distance.toFixed(2)} m) del carro.`
       );
+      if (!toast.visible) {
+        showToast("¡El bus se encuentra cerca a ti!", "notifications", "bg-green-500");
+      }
     } else {
       console.log(
         `El usuario está fuera del radio de ${
@@ -131,11 +135,10 @@ const CarMap = ({ stopBus, setStopBus, notification, isUserLocationActive, setIs
         (position) => {
           const userPos = [position.coords.latitude, position.coords.longitude];
           if (!isInsideUniversity(userPos[0], userPos[1])) {
-            console.log("Usuario fuera de la universidad");
             if (!toast.visible) {
-              console.log("Mostrar alerta");
               showToast("Ups! estás fuera de la universidad", "warning", "bg-red-500");
             }
+            return;
           }
           setUserPosition(userPos);
           setIsUserLocationActive(true);
