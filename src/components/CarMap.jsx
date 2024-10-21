@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import axios from "axios";
 import Fab from "./Fab";
 import Toast from "./Toast";
+import PropTypes from 'prop-types';
 
 // eslint-disable-next-line react/prop-types
 const RecenterView = ({ lat, lng }) => {
@@ -23,19 +24,24 @@ const bounds = [
   [-12.051, -77.079],
 ];
 
-// eslint-disable-next-line react/prop-types
-const CarMap = ({ stopBus, setStopBus, notification, setNotification, isUserLocationActive, setIsUserLocationActive }) => {
+const CarMap = ({
+  stopBus,
+  setStopBus,
+  notification,
+  setNotification,
+  isUserLocationActive,
+  setIsUserLocationActive,
+}) => {
   const [carData, setCarData] = useState(null); // Datos del bus
   const [carPosition, setCarPosition] = useState(null); // Posición del bus
   const [userPosition, setUserPosition] = useState(null); // Posición del usuario
-  
-  const [center, setCenter] = useState(carPosition); // Centro del mapa
+  const [center, setCenter] = useState(null); // Centro del mapa
   const [followCar, setFollowCar] = useState(false); // Seguir al bus
   const [toast, setToast] = useState({
     visible: false,
-    text: '',
-    icon: '',
-    color: '',
+    text: "",
+    icon: "",
+    color: "",
   }); // Estado del toast
 
   const showToast = (text, icon, color) => {
@@ -80,18 +86,6 @@ const CarMap = ({ stopBus, setStopBus, notification, setNotification, isUserLoca
         } else {
           setStopBus(false);
         }
-        if (followCar) {
-          console.log("Centrar en el bus activado");
-          setCenter([data.latitude, data.longitude]);
-        }
-        if (isUserLocationActive && userPosition && carPosition && notification) {
-          console.log("Verificar si el usuario está dentro del radio del bus");
-          checkIfWithinRadius(
-            [data.latitude, data.longitude],
-            userPosition,
-            500
-          );
-        }
       } catch (error) {
         console.error("Error al obtener datos de la API", error);
       }
@@ -103,7 +97,26 @@ const CarMap = ({ stopBus, setStopBus, notification, setNotification, isUserLoca
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (followCar && carPosition) {
+      setCenter(carPosition);
+    }
+  }, [followCar, carPosition]);
+
+  useEffect(() => {
+    if (isUserLocationActive && carPosition && userPosition && notification) {
+      checkIfWithinRadius(carPosition, userPosition, 100); // Verifica si el usuario está dentro del radio del carro
+    }
+  }, [
+    carPosition,
+    checkIfWithinRadius,
+    userPosition,
+    notification,
+    isUserLocationActive,
+  ]);
+
   // Función para verificar si el usuario está dentro del radio del carro
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   function checkIfWithinRadius(carPosition, userPosition, radius) {
     const carLatLng = L.latLng(carPosition[0], carPosition[1]);
     const userLatLng = L.latLng(userPosition[0], userPosition[1]);
@@ -117,7 +130,11 @@ const CarMap = ({ stopBus, setStopBus, notification, setNotification, isUserLoca
         } km (${distance.toFixed(2)} m) del carro.`
       );
       if (!toast.visible) {
-        showToast("¡El bus se encuentra cerca a ti!", "notifications", "bg-green-500");
+        showToast(
+          "¡El bus se encuentra cerca a ti!",
+          "notifications",
+          "bg-green-500"
+        );
         setNotification(false);
       }
     } else {
@@ -137,7 +154,11 @@ const CarMap = ({ stopBus, setStopBus, notification, setNotification, isUserLoca
           const userPos = [position.coords.latitude, position.coords.longitude];
           if (!isInsideUniversity(userPos[0], userPos[1])) {
             if (!toast.visible) {
-              showToast("Ups! estás fuera de la universidad", "warning", "bg-red-500");
+              showToast(
+                "Ups! estás fuera de la universidad",
+                "warning",
+                "bg-red-500"
+              );
             }
             return;
           }
@@ -157,14 +178,8 @@ const CarMap = ({ stopBus, setStopBus, notification, setNotification, isUserLoca
   const recenterToCar = () => {
     console.log("centrar al bus");
     if (carPosition) {
-      if (followCar) {
-        setFollowCar(false);
-        console.log("Dejar de seguir al bus");
-      } else {
-        setFollowCar(true);
-        setCenter(carPosition);
-        console.log("Seguir al bus");
-      }
+      followCar ? setFollowCar(false) : setFollowCar(true);
+      setCenter(carPosition);
     }
   };
 
@@ -208,6 +223,7 @@ const CarMap = ({ stopBus, setStopBus, notification, setNotification, isUserLoca
         onClick={recenterToCar}
         className="absolute bottom-4 left-3.5 z-30"
         icon={"directions_bus"}
+        isActive={followCar}
       ></Fab>
       {/* Botón para activar la geolocalización y centrar el mapa */}
       <Fab
@@ -260,6 +276,15 @@ const CarMap = ({ stopBus, setStopBus, notification, setNotification, isUserLoca
       </MapContainer>
     </div>
   );
+};
+
+CarMap.propTypes = {
+  stopBus: PropTypes.bool,
+  setStopBus: PropTypes.func,
+  notification: PropTypes.bool,
+  setNotification: PropTypes.func,
+  isUserLocationActive: PropTypes.bool,
+  setIsUserLocationActive: PropTypes.func,
 };
 
 export default CarMap;
