@@ -1,34 +1,10 @@
 import { useState, useEffect } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  useMap
-} from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
 import Fab from "./Fab";
 import Toast from "./Toast";
-
-const placeUniversity = [
-  {
-    name: "Comedor principal",
-    lat: -12.059311510728927,
-    long: -77.08310943612842,
-  },
-  {
-    name: "Edificio S",
-    lat: 14.6043,
-    long: -90.4895,
-  },
-  {
-    name: "Edificio T",
-    lat: 14.6043,
-    long: -90.4895,
-  },
-];
 
 // eslint-disable-next-line react/prop-types
 const RecenterView = ({ lat, lng }) => {
@@ -41,20 +17,35 @@ const RecenterView = ({ lat, lng }) => {
   return null;
 };
 
-// Restrict the map to the San Marcos University
+// Limite de mapa de San Marcos (dentro de la universidad)
 const bounds = [
   [-12.062, -77.089],
   [-12.051, -77.079],
 ];
 
 // eslint-disable-next-line react/prop-types
-const CarMap = ({ stopBus, setStopBus }) => {
-  const [carData, setCarData] = useState(null);
-  const [carPosition, setCarPosition] = useState(null);
-  const [userPosition, setUserPosition] = useState(null);
-  const [isUserLocationActive, setIsUserLocationActive] = useState(false);
-  const [center, setCenter] = useState([-12.0555083, -77.08777]);
-  const [followCar, setFollowCar] = useState(false);
+const CarMap = ({ stopBus, setStopBus, notification, isUserLocationActive, setIsUserLocationActive }) => {
+  const [carData, setCarData] = useState(null); // Datos del bus
+  const [carPosition, setCarPosition] = useState(null); // Posición del bus
+  const [userPosition, setUserPosition] = useState(null); // Posición del usuario
+  
+  const [center, setCenter] = useState(carPosition); // Centro del mapa
+  const [followCar, setFollowCar] = useState(false); // Seguir al bus
+  const [toast, setToast] = useState({
+    visible: false,
+    text: '',
+    icon: '',
+    color: '',
+  }); // Estado del toast
+
+  const showToast = (text, icon, color) => {
+    setToast({
+      visible: true,
+      text,
+      icon,
+      color,
+    });
+  };
 
   // Íconos personalizados
 
@@ -93,6 +84,13 @@ const CarMap = ({ stopBus, setStopBus }) => {
           console.log("Centrar en el bus activado");
           setCenter([data.latitude, data.longitude]);
         }
+        if (isUserLocationActive && userPosition && carPosition && notification) {
+          checkIfWithinRadius(
+            [data.latitude, data.longitude],
+            userPosition,
+            1000
+          );
+        }
       } catch (error) {
         console.error("Error al obtener datos de la API", error);
       }
@@ -104,7 +102,7 @@ const CarMap = ({ stopBus, setStopBus }) => {
     return () => clearInterval(interval);
   }, []);
 
-  // Función para verificar si el usuario está dentro del radio
+  // Función para verificar si el usuario está dentro del radio del carro
   function checkIfWithinRadius(carPosition, userPosition, radius) {
     const carLatLng = L.latLng(carPosition[0], carPosition[1]);
     const userLatLng = L.latLng(userPosition[0], userPosition[1]);
@@ -132,14 +130,15 @@ const CarMap = ({ stopBus, setStopBus }) => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const userPos = [position.coords.latitude, position.coords.longitude];
+          if (!isInsideUniversity(userPos[0], userPos[1])) {
+            console.log("Usuario fuera de la universidad");
+            if (!toast.visible) {
+              console.log("Mostrar alerta");
+              showToast("Ups! estás fuera de la universidad", "warning", "bg-red-500");
+            }
+          }
           setUserPosition(userPos);
           setIsUserLocationActive(true);
-          const radius = 1000; // Radio de 1 km
-          checkIfWithinRadius(
-            carPosition,
-            [placeUniversity[0].lat, placeUniversity[0].long],
-            radius
-          );
         },
         (error) => {
           console.error("Error al obtener la ubicación del usuario", error);
@@ -165,12 +164,27 @@ const CarMap = ({ stopBus, setStopBus }) => {
     }
   };
 
+  // Función para saber si la posicion está dentro de la universidad
+  const isInsideUniversity = (lat, long) => {
+    const result =
+      lat >= bounds[0][0] &&
+      lat <= bounds[1][0] &&
+      long >= bounds[0][1] &&
+      long <= bounds[1][1];
+    console.log("Dentro de la universidad: ", result);
+    return result;
+  };
+
   // Función para centrar el mapa en la posición del usuario
   const recenterToUser = () => {
-    console.log("centrar al usuario");
     if (isUserLocationActive && userPosition) {
       setCenter(userPosition); // Actualiza el estado "center" con la posición del usuario
     }
+  };
+
+  // Funcion para el set del toast
+  const onDeleteToast = () => {
+    setToast({ ...toast, visible: false });
   };
 
   return (
@@ -195,22 +209,22 @@ const CarMap = ({ stopBus, setStopBus }) => {
       <Fab
         onClick={!isUserLocationActive ? activateUserLocation : recenterToUser}
         className="absolute bottom-4 right-3.5 z-30"
-        icon={!isUserLocationActive ? "near_me" : "person_pin"}
+        icon={!isUserLocationActive ? "near_me_disabled" : "person_pin"}
       ></Fab>
-      {/* Alerta 
-      <div className="absolute z-20 bottom-5 w-full">
+      {/* Alerta */}
+      {toast.visible && (
         <Toast
-          text="El bus se encuentra cerca"
-          icon="info"
-          className={"mx-auto"}
-          isHidden={true}
-        ></Toast>
-      </div>*/}
+          text={toast.text}
+          icon={toast.icon}
+          color={toast.color}
+          className="bottom-5"
+          onDelete={onDeleteToast}
+        />
+      )}
       {/* Mapa */}
       <MapContainer
         center={center}
         bounds={bounds}
-        maxBounds={bounds}
         bounceAtZoomLimits={true}
         minZoom={16}
         maxZoom={18}
@@ -225,11 +239,9 @@ const CarMap = ({ stopBus, setStopBus }) => {
           <Marker position={carPosition} icon={carIcon}>
             <Popup>
               <b>Velocidad:</b> {carData.speed.toFixed(2)} km/h
-              <br />
             </Popup>
           </Marker>
         )}
-
         {/* Marcador del usuario (solo si se activó la geolocalización) */}
         {isUserLocationActive && userPosition && (
           <Marker position={userPosition} icon={userIcon}>

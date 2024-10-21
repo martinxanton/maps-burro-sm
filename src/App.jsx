@@ -1,15 +1,20 @@
 import "./App.css";
 import { useState } from "react";
 import CarMap from "./components/CarMap";
-import Toast from "./components/Toast";
 import Footer from "./components/Footer";
 
 function App() {
   const [stopBus, setStopBus] = useState(true);
   const [notification, setNotification] = useState(false);
+  const [isUserLocationActive, setIsUserLocationActive] = useState(false); // Estado de la geolocalización del usuario
 
   const checkedNotification = () => {
-    setNotification(!notification);
+    if (isUserLocationActive) {
+      setNotification(true);
+    } else {
+      setNotification(false);
+    }
+    
   };
 
   return (
@@ -41,7 +46,7 @@ function App() {
         <div className="flex-1 w-screen bg-base-100 relative flex flex-col lg:flex-row items-center justify-center lg:gap-5 lg:p-16">
           
           {/* Mapa */}
-          <CarMap stopBus={stopBus} setStopBus={setStopBus} />
+          <CarMap stopBus={stopBus} setStopBus={setStopBus} notification={notification} isUserLocationActive={isUserLocationActive} setIsUserLocationActive={setIsUserLocationActive} />
           {/* Extra */}
           <div className="collapse bg-base-200">
             <input type="checkbox" />
