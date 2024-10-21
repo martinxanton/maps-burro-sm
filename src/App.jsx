@@ -47,7 +47,7 @@ function App() {
         <div className="flex-1 w-screen bg-base-100 relative flex flex-col lg:flex-row items-center justify-center lg:gap-5 lg:p-16">
           
           {/* Mapa */}
-          <CarMap stopBus={stopBus} setStopBus={setStopBus} notification={notification} isUserLocationActive={isUserLocationActive} setIsUserLocationActive={setIsUserLocationActive} />
+          <CarMap stopBus={stopBus} setStopBus={setStopBus} notification={notification} setNotification={setNotification} isUserLocationActive={isUserLocationActive} setIsUserLocationActive={setIsUserLocationActive} />
           {/* Extra */}
           <div className="collapse bg-base-200">
             <input type="checkbox" />

@@ -24,7 +24,7 @@ const bounds = [
 ];
 
 // eslint-disable-next-line react/prop-types
-const CarMap = ({ stopBus, setStopBus, notification, isUserLocationActive, setIsUserLocationActive }) => {
+const CarMap = ({ stopBus, setStopBus, notification, setNotification, isUserLocationActive, setIsUserLocationActive }) => {
   const [carData, setCarData] = useState(null); // Datos del bus
   const [carPosition, setCarPosition] = useState(null); // Posición del bus
   const [userPosition, setUserPosition] = useState(null); // Posición del usuario
@@ -118,6 +118,7 @@ const CarMap = ({ stopBus, setStopBus, notification, isUserLocationActive, setIs
       );
       if (!toast.visible) {
         showToast("¡El bus se encuentra cerca a ti!", "notifications", "bg-green-500");
+        setNotification(false);
       }
     } else {
       console.log(
