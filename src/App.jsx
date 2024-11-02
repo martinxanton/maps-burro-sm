@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import "./App.css";
 import { useState } from "react";
 import CarMap from "./components/CarMap";
@@ -8,6 +9,13 @@ function App() {
   const [notification, setNotification] = useState(false);
   const [isUserLocationActive, setIsUserLocationActive] = useState(false);
   const [routePass, setRoutePass] = useState(null);
+
+  if(notification) {
+    Notification.requestPermission().then(function (permission) {
+      // Si el usuario nos lo concede, creamos la notificación
+      console.log("Permisos asignados")
+    });
+  }
 
   const checkedNotification = () => {
     if (isUserLocationActive && !notification) {

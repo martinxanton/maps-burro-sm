@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
@@ -145,6 +146,27 @@ const CarMap = ({
           "bg-green-500"
         );
         setNotification(false);
+        if (!("Notification" in window)) {
+          alert(
+            "Este navegador no es compatible con las notificaciones de escritorio",
+          );
+        }
+      
+        // Comprobamos si los permisos han sido concedidos anteriormente
+        else if (Notification.permission === "granted") {
+          // Si es correcto, lanzamos una notificación
+          var notification = new Notification("¡El bus se encuentra cerca a ti!");
+        }
+      
+        // Si no, pedimos permiso para la notificación
+        else if (Notification.permission !== "denied") {
+          Notification.requestPermission().then(function (permission) {
+            // Si el usuario nos lo concede, creamos la notificación
+            if (permission === "granted") {
+              var notification = new Notification("¡El bus se encuentra cerca a ti!");
+            }
+          });
+        }
       }
     } else {
       console.log(
