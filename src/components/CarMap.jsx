@@ -6,6 +6,9 @@ import axios from "axios";
 import Fab from "./Fab";
 import Toast from "./Toast";
 import PropTypes from 'prop-types';
+import RoutingMachine from "./RoutingMachine";
+
+
 
 // eslint-disable-next-line react/prop-types
 const RecenterView = ({ lat, lng }) => {
@@ -31,6 +34,7 @@ const CarMap = ({
   setNotification,
   isUserLocationActive,
   setIsUserLocationActive,
+  routePass,
 }) => {
   const [carData, setCarData] = useState(null); // Datos del bus
   const [carPosition, setCarPosition] = useState(null); // Posición del bus
@@ -44,6 +48,8 @@ const CarMap = ({
     color: "",
   }); // Estado del toast
 
+  console.log(routePass);
+
   const showToast = (text, icon, color) => {
     setToast({
       visible: true,
@@ -52,6 +58,7 @@ const CarMap = ({
       color,
     });
   };
+
 
   // Íconos personalizados
 
@@ -70,6 +77,8 @@ const CarMap = ({
     iconAnchor: [16, 32],
     popupAnchor: [0, -16],
   });
+
+  
 
   // Obtener la información del carro desde la API
   useEffect(() => {
@@ -271,6 +280,9 @@ const CarMap = ({
             </Popup>
           </Marker>
         )}
+        {
+          routePass && <RoutingMachine from={routePass} to={[-12.057107453321011, -77.079942455595]} />
+        }
         {/* Reubica la vista según el estado "center" */}
         {center && <RecenterView lat={center[0]} lng={center[1]} />}
       </MapContainer>
@@ -285,6 +297,7 @@ CarMap.propTypes = {
   setNotification: PropTypes.func,
   isUserLocationActive: PropTypes.bool,
   setIsUserLocationActive: PropTypes.func,
+  routePass: PropTypes.array,
 };
 
 export default CarMap;
