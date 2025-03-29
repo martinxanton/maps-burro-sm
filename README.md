@@ -1,8 +1,33 @@
-# React + Vite
+# 🚍 Mapa Interactivo del Bus UNMSM
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Leaflet](https://img.shields.io/badge/Leaflet-199900?style=for-the-badge&logo=Leaflet&logoColor=white)
+![Responsive](https://img.shields.io/badge/Responsive-Design-green?style=for-the-badge)
 
-Currently, two official plugins are available:
+Aplicación web para el seguimiento en tiempo real del bus interno de la Universidad Nacional Mayor de San Marcos.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🌟 Características principales
+
+- Mapa interactivo con Leaflet en React
+- Seguimiento en tiempo real del bus
+- Función de geolocalización del usuario
+- Notificaciones cuando el bus está cerca (radio configurable)
+- Diseño responsive para móviles y desktop
+- Indicador de ruta y paradas principales
+- Consumo de API REST de la geolocaclización del bus UNMSM (Externo)
+
+## 🛠 Tecnologías utilizadas
+
+- **Frontend**: React.js + Vite
+- **Mapas**: Leaflet + React-Leaflet
+- **Geolocalización**: Browser Geolocation API
+- **Notificaciones**: Toast Personalizado
+- **Estilos**: TailwindCSS, DaisyUI
+
+## 📸 Capturas de pantalla
+
+### Vista de Escritorio
+![Vista PC](/public/sc1.png)
+
+### Vista Móvil
+![Vista Móvil](/public/sc2.jpeg)
